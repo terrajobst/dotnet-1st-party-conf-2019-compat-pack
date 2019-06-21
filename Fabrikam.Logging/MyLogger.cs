@@ -49,11 +49,13 @@ namespace Fabrikam.Logging
 
         private static string GetLoggingDirectory()
         {
+#if NET472
             using (var key = Registry.CurrentUser.OpenSubKey(@"Software\Fabrikam"))
             {
                 if (key?.GetValue("LoggingDirectoryPath") is string configuredPath)
                     return configuredPath;
             }
+#endif
 
             var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             return Path.Combine(appDataPath, "Fabrikam", "Logging");
