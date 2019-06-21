@@ -1,8 +1,9 @@
-﻿using System;
-using System.IO;
+﻿using Microsoft.Win32;
 
-using Microsoft.Win32;
 using Newtonsoft.Json;
+
+using System;
+using System.IO;
 
 namespace Fabrikam.Logging
 {
@@ -11,7 +12,7 @@ namespace Fabrikam.Logging
         public static MyLogger Instance = new MyLogger();
 
         private readonly TextWriter _writer;
-
+        
         private MyLogger()
         {
             _writer = new StreamWriter(GetLoggingPath())
@@ -22,11 +23,13 @@ namespace Fabrikam.Logging
 
         public void Write(string message)
         {
+            OnLoggged(message);
             _writer.Write(message);
         }
 
         public void WriteLine(string message)
         {
+            OnLoggged(message);
             _writer.WriteLine(message);
         }
 
@@ -55,5 +58,12 @@ namespace Fabrikam.Logging
             var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             return Path.Combine(appDataPath, "Fabrikam", "Logging");
         }
+
+        private void OnLoggged(string message)
+        {
+            Logged?.Invoke(message);
+        }
+
+        public event Action<string> Logged;
     }
 }
